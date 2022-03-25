@@ -16,6 +16,7 @@ class FolderPanel:
         self.ActiveTxt_Btn = tk.Checkbutton(window, text='轉換.txt檔案', var = self.ActiveTxt, font = EntryFont)
         self.ActiveSrt = tk.BooleanVar()
         self.ActiveSrt_Btn = tk.Checkbutton(window, text='轉換.srt檔案', var = self.ActiveSrt, font = EntryFont)
+        self.ExecuteBtn = tk.Button(window, text='開始轉換', bg = "light blue", font = BtnFont)
         ##
         self.WillCover_Btn.config(command = lambda:self.CoverEvent())
 
@@ -28,6 +29,7 @@ class FolderPanel:
         self.ActiveLrc_Btn.place(x = 800, y = 75)
         self.ActiveTxt_Btn.place(x = 800, y = 125)
         self.ActiveSrt_Btn.place(x = 800, y = 175)
+        self.ExecuteBtn.place(x = 400, y = 325)
         self.CoverEvent()
 
     def HideUI(self):
@@ -40,6 +42,7 @@ class FolderPanel:
         self.ActiveLrc_Btn.place_forget()
         self.ActiveTxt_Btn.place_forget()
         self.ActiveSrt_Btn.place_forget()
+        
     
     def CoverEvent(self):
         if self.WillCover.get() :

@@ -1,6 +1,7 @@
 import tkinter as tk
 from FolderPanel import *
 from FilePanel import *
+from zhconv import convert
 
 class MainPanel:
     def __init__(self, window, BtnFont, EntryFont):
