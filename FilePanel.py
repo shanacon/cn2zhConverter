@@ -50,7 +50,7 @@ class FilePanel:
     def ChooseFile(self):
         file_path = filedialog.askopenfilename()
         if file_path != "":
-            if os.path.splitext(file_path)[1] == '.txt' or  os.path.splitext(file_path)[1] == '.lrc' :
+            if os.path.splitext(file_path)[1] == '.txt' or  os.path.splitext(file_path)[1] == '.lrc' or  os.path.splitext(file_path)[1] == '.ass':
                 self.FileText.config(text = os.path.basename(file_path))
                 self.Pathreg = file_path
     
@@ -58,6 +58,20 @@ class FilePanel:
         if os.path.splitext(self.Pathreg)[1] == '.txt' or  os.path.splitext(self.Pathreg)[1] == '.lrc' :
             LoadF = open(self.Pathreg, "r" , encoding='utf-8')
             ConvertData = convert(LoadF.read(),'zh-tw')
-            print(ConvertData)
+            with open(self.Pathreg, "w", encoding='utf-8') as WriteF:
+                WriteF.write(ConvertData)
+        if os.path.splitext(self.Pathreg)[1] == '.ass':
+            LoadF = open(self.Pathreg, "r" , encoding='utf-8')
+            lines = LoadF.readlines()
+            ConvertData = ""
+            for line in lines:
+                former = line.split(':')[0]
+                if former == "Style" :
+                    style = line.split(':')[1].split(',')[0]
+                    ConvertData += line.replace(style, convert(style ,'zh-tw')) 
+                elif former == "Dialogue" :
+                    ConvertData += convert(line,'zh-tw')
+                else :
+                    ConvertData += line
             with open(self.Pathreg, "w", encoding='utf-8') as WriteF:
                 WriteF.write(ConvertData)
