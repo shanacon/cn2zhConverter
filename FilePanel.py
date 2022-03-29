@@ -17,10 +17,12 @@ class FilePanel:
         #
         self.Pathreg = ""
         self.Folderreg = ""
+        self.Coverreg = False
         ##
         self.WillCover_Btn.config(command = lambda:self.CoverEvent())
         self.FileBtn.config(command = lambda:self.ChooseFile())
-        self.ExecuteBtn.config(command = lambda:self.Convert_Cover())
+        self.ExecuteBtn.config(command = lambda:self.Convert())
+        self.OutputPlace.config(command = lambda:self.ChooseFolder())
 
     def ShowUI(self):
         self.OutputText.place(x = 400, y = 150)
@@ -43,9 +45,11 @@ class FilePanel:
         if self.WillCover.get() :
             self.OutputPlace.place_forget()
             self.OutputFText.place_forget()
+            self.Coverreg = True
         else :
             self.OutputPlace.place(x = 400, y = 250)
             self.OutputFText.place(x = 600, y = 253)
+            self.Coverreg = False
     
     def ChooseFile(self):
         file_path = filedialog.askopenfilename()
@@ -54,12 +58,22 @@ class FilePanel:
                 self.FileText.config(text = os.path.basename(file_path))
                 self.Pathreg = file_path
     
-    def Convert_Cover(self):
+    def ChooseFolder(self):
+        self.Folderreg = filedialog.askdirectory()
+        if self.Folderreg != "":
+            self.OutputFText.config(text = self.Folderreg)
+
+    def Convert(self):
+        if not self.Coverreg and self.Folderreg == "":
+            self.OutputFText.config(text = "請選擇輸出資料夾！")
+            return
         if os.path.splitext(self.Pathreg)[1] == '.txt' or  os.path.splitext(self.Pathreg)[1] == '.lrc' or  os.path.splitext(self.Pathreg)[1] == '.srt' :
             LoadF = open(self.Pathreg, "r" , encoding='utf-8')
             ConvertData = convert(LoadF.read(),'zh-tw')
-            with open(self.Pathreg, "w", encoding='utf-8') as WriteF:
-                WriteF.write(ConvertData)
+            if self.Coverreg :
+                self.Output_Cover(ConvertData)
+            else :
+                self.Output_NoCover(ConvertData)
         if os.path.splitext(self.Pathreg)[1] == '.ass':
             LoadF = open(self.Pathreg, "r" , encoding='utf-8')
             lines = LoadF.readlines()
@@ -73,5 +87,16 @@ class FilePanel:
                     ConvertData += convert(line,'zh-tw')
                 else :
                     ConvertData += line
-            with open(self.Pathreg, "w", encoding='utf-8') as WriteF:
+            if self.Coverreg :
+                self.Output_Cover(ConvertData)
+            else :
+                self.Output_NoCover(ConvertData)
+
+    def Output_Cover(self, ConvertData):
+        with open(self.Pathreg, "w", encoding='utf-8') as WriteF:
                 WriteF.write(ConvertData)
+
+    def Output_NoCover(self, ConvertData):
+        FileName = os.path.basename(self.Pathreg)
+        with open(self.Folderreg + '/' + FileName, "w", encoding='utf-8') as WriteF:
+            WriteF.write(ConvertData)
