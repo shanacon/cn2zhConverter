@@ -50,12 +50,12 @@ class FilePanel:
     def ChooseFile(self):
         file_path = filedialog.askopenfilename()
         if file_path != "":
-            if os.path.splitext(file_path)[1] == '.txt' or  os.path.splitext(file_path)[1] == '.lrc' or  os.path.splitext(file_path)[1] == '.ass':
+            if os.path.splitext(file_path)[1] == '.txt' or  os.path.splitext(file_path)[1] == '.lrc' or  os.path.splitext(file_path)[1] == '.ass' or os.path.splitext(file_path)[1] == '.srt'  :
                 self.FileText.config(text = os.path.basename(file_path))
                 self.Pathreg = file_path
     
     def Convert_Cover(self):
-        if os.path.splitext(self.Pathreg)[1] == '.txt' or  os.path.splitext(self.Pathreg)[1] == '.lrc' :
+        if os.path.splitext(self.Pathreg)[1] == '.txt' or  os.path.splitext(self.Pathreg)[1] == '.lrc' or  os.path.splitext(self.Pathreg)[1] == '.srt' :
             LoadF = open(self.Pathreg, "r" , encoding='utf-8')
             ConvertData = convert(LoadF.read(),'zh-tw')
             with open(self.Pathreg, "w", encoding='utf-8') as WriteF:
