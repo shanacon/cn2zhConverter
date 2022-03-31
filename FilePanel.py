@@ -22,7 +22,7 @@ class FilePanel:
         self.WillCover_Btn.config(command = lambda:self.CoverEvent())
         self.FileBtn.config(command = lambda:self.ChooseFile())
         self.ExecuteBtn.config(command = lambda:self.Convert())
-        self.OutputPlace.config(command = lambda:self.ChooseFolder())
+        self.OutputPlace.config(command = lambda:self.ChooseOutput())
 
     def ShowUI(self):
         self.OutputText.place(x = 400, y = 150)
@@ -58,7 +58,7 @@ class FilePanel:
                 self.FileText.config(text = os.path.basename(file_path))
                 self.Pathreg = file_path
     
-    def ChooseFolder(self):
+    def ChooseOutput(self):
         self.Folderreg = filedialog.askdirectory()
         if self.Folderreg != "":
             self.OutputFText.config(text = self.Folderreg)
@@ -94,7 +94,7 @@ class FilePanel:
 
     def Output_Cover(self, ConvertData):
         with open(self.Pathreg, "w", encoding='utf-8') as WriteF:
-                WriteF.write(ConvertData)
+            WriteF.write(ConvertData)
 
     def Output_NoCover(self, ConvertData):
         FileName = os.path.basename(self.Pathreg)
