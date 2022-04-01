@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from zhconv import convert
+from ConvertEvent import *
 import os
 
 class FolderPanel:
@@ -21,21 +22,30 @@ class FolderPanel:
         self.ActiveSrt_Btn = tk.Checkbutton(window, text='轉換.srt檔案', var = self.ActiveSrt, font = EntryFont)
         self.ExecuteBtn = tk.Button(window, text='開始轉換', bg = "light blue", font = BtnFont)
         ##
+        self.FolderText = tk.Label(window, text ="", font = EntryFont)
+        self.OutputFText = tk.Label(window, text ="", font = EntryFont)
+        ##
         self.filelist = []
+        self.Pathreg = ""
+        self.Outputreg = ""
+        self.Coverreg = False
         ##
         self.WillCover_Btn.config(command = lambda:self.CoverEvent())
         self.FolderBtn.config(command = lambda:self.ChooseFolder())
+        self.ExecuteBtn.config(command = lambda:self.ConvertAction())
+        self.OutputPlace.config(command = lambda:self.ChooseOutput())
 
     def ShowUI(self):
         self.OutputText.place(x = 400, y = 150)
-        self.ActiveText.place(x = 600, y = 100)
+        self.ActiveText.place(x = 220, y = 25)
         self.FolderBtn.place(x = 400, y = 50)
         self.WillCover_Btn.place(x = 400, y = 200)
-        self.ActiveAss_Btn.place(x = 800, y = 25)
-        self.ActiveLrc_Btn.place(x = 800, y = 75)
-        self.ActiveTxt_Btn.place(x = 800, y = 125)
-        self.ActiveSrt_Btn.place(x = 800, y = 175)
+        self.ActiveAss_Btn.place(x = 220, y = 70)
+        self.ActiveLrc_Btn.place(x = 220, y = 120)
+        self.ActiveTxt_Btn.place(x = 220, y = 170)
+        self.ActiveSrt_Btn.place(x = 220, y = 220)
         self.ExecuteBtn.place(x = 400, y = 325)
+        self.FolderText.place(x = 600, y = 62)
         self.CoverEvent()
 
     def HideUI(self):
@@ -48,25 +58,57 @@ class FolderPanel:
         self.ActiveLrc_Btn.place_forget()
         self.ActiveTxt_Btn.place_forget()
         self.ActiveSrt_Btn.place_forget()
+        self.FolderText.place_forget()
+        self.OutputFText.place_forget()
         
     def CoverEvent(self):
         if self.WillCover.get() :
             self.OutputPlace.place_forget()
+            self.OutputFText.place_forget()
+            self.Coverreg = True
         else :
             self.OutputPlace.place(x = 400, y = 250)
+            self.OutputFText.place(x = 600, y = 253)
+            self.Coverreg = False
 
     def ChooseFolder(self):
-        self.filelist = []
         file_path = filedialog.askdirectory()
         if file_path != "":
-            for root, dirs, files in os.walk(file_path):
-                for file in files:
-                    if self.ActiveAss.get() and os.path.splitext(file)[1] == '.ass' :
-                        self.filelist.append(os.path.join(root, file))
-                    if self.ActiveLrc.get() and os.path.splitext(file)[1] == '.lrc' :
-                        self.filelist.append(os.path.join(root, file))
-                    if self.ActiveTxt.get() and os.path.splitext(file)[1] == '.txt' :
-                        self.filelist.append(os.path.join(root, file))
-                    if self.ActiveSrt.get() and os.path.splitext(file)[1] == '.srt' :
-                        self.filelist.append(os.path.join(root, file))
-            print(self.filelist)
+            self.FolderText.config(text = file_path)
+            self.Pathreg = file_path
+
+    def ChooseOutput(self):
+        self.Outputreg = filedialog.askdirectory()
+        if self.Outputreg != "":
+            self.OutputFText.config(text = self.Outputreg)
+    
+    def ConvertAction(self):
+        self.filelist = []
+        if self.Pathreg == "" :
+            self.FolderText.config(text = "請選擇欲轉換的資料夾！")
+            return
+        if not self.Coverreg and self.Outputreg == "":
+            self.OutputFText.config(text = "請選擇輸出資料夾！")
+            return
+        for root, dirs, files in os.walk(self.Pathreg):
+            for file in files:
+                if self.ActiveAss.get() and os.path.splitext(file)[1] == '.ass' :
+                    self.filelist.append(os.path.join(root, file))
+                if self.ActiveLrc.get() and os.path.splitext(file)[1] == '.lrc' :
+                    self.filelist.append(os.path.join(root, file))
+                if self.ActiveTxt.get() and os.path.splitext(file)[1] == '.txt' :
+                    self.filelist.append(os.path.join(root, file))
+                if self.ActiveSrt.get() and os.path.splitext(file)[1] == '.srt' :
+                    self.filelist.append(os.path.join(root, file))
+        for file in self.filelist :
+            if os.path.splitext(file)[1] == '.ass' :
+                LoadF = open(file, "r" , encoding='utf-8')
+                lines = LoadF.readlines()
+                ConvertData = ConvertAss(lines)
+            else :
+                LoadF = open(file, "r" , encoding='utf-8')
+                ConvertData = Convert(LoadF.read())
+            if self.Coverreg :
+                Output_Cover(ConvertData, file)
+            else :
+                Output_NoCover(ConvertData, file, self.Outputreg)

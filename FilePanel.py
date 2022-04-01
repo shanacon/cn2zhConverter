@@ -17,7 +17,7 @@ class FilePanel:
         self.OutputFText = tk.Label(window, text ="", font = EntryFont)
         #
         self.Pathreg = ""
-        self.Folderreg = ""
+        self.Outputreg = ""
         self.Coverreg = False
         ##
         self.WillCover_Btn.config(command = lambda:self.CoverEvent())
@@ -60,26 +60,25 @@ class FilePanel:
                 self.Pathreg = file_path
     
     def ChooseOutput(self):
-        self.Folderreg = filedialog.askdirectory()
-        if self.Folderreg != "":
-            self.OutputFText.config(text = self.Folderreg)
+        self.Outputreg = filedialog.askdirectory()
+        if self.Outputreg != "":
+            self.OutputFText.config(text = self.Outputreg)
 
     def ConvertAction(self):
-        if not self.Coverreg and self.Folderreg == "":
+        if self.Pathreg == "" :
+            self.FileText.config(text = "請選擇欲轉換的檔案！")
+            return
+        if not self.Coverreg and self.Outputreg == "":
             self.OutputFText.config(text = "請選擇輸出資料夾！")
             return
         if os.path.splitext(self.Pathreg)[1] == '.txt' or  os.path.splitext(self.Pathreg)[1] == '.lrc' or  os.path.splitext(self.Pathreg)[1] == '.srt' :
             LoadF = open(self.Pathreg, "r" , encoding='utf-8')
             ConvertData = Convert(LoadF.read())
-            if self.Coverreg :
-                Output_Cover(ConvertData, self.Pathreg)
-            else :
-                Output_NoCover(ConvertData, self.Pathreg, self.Folderreg)
         if os.path.splitext(self.Pathreg)[1] == '.ass':
             LoadF = open(self.Pathreg, "r" , encoding='utf-8')
             lines = LoadF.readlines()
             ConvertData = ConvertAss(lines)
-            if self.Coverreg :
-                Output_Cover(ConvertData, self.Pathreg)
-            else :
-                Output_NoCover(ConvertData, self.Pathreg, self.Folderreg)
+        if self.Coverreg :
+            Output_Cover(ConvertData, self.Pathreg)
+        else :
+            Output_NoCover(ConvertData, self.Pathreg, self.Outputreg)
