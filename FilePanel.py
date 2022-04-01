@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from zhconv import convert
+from ConvertEvent import *
 import os
 
 class FilePanel:
@@ -21,7 +22,7 @@ class FilePanel:
         ##
         self.WillCover_Btn.config(command = lambda:self.CoverEvent())
         self.FileBtn.config(command = lambda:self.ChooseFile())
-        self.ExecuteBtn.config(command = lambda:self.Convert())
+        self.ExecuteBtn.config(command = lambda:self.ConvertAction())
         self.OutputPlace.config(command = lambda:self.ChooseOutput())
 
     def ShowUI(self):
@@ -63,40 +64,22 @@ class FilePanel:
         if self.Folderreg != "":
             self.OutputFText.config(text = self.Folderreg)
 
-    def Convert(self):
+    def ConvertAction(self):
         if not self.Coverreg and self.Folderreg == "":
             self.OutputFText.config(text = "請選擇輸出資料夾！")
             return
         if os.path.splitext(self.Pathreg)[1] == '.txt' or  os.path.splitext(self.Pathreg)[1] == '.lrc' or  os.path.splitext(self.Pathreg)[1] == '.srt' :
             LoadF = open(self.Pathreg, "r" , encoding='utf-8')
-            ConvertData = convert(LoadF.read(),'zh-tw')
+            ConvertData = Convert(LoadF.read())
             if self.Coverreg :
-                self.Output_Cover(ConvertData)
+                Output_Cover(ConvertData, self.Pathreg)
             else :
-                self.Output_NoCover(ConvertData)
+                Output_NoCover(ConvertData, self.Pathreg, self.Folderreg)
         if os.path.splitext(self.Pathreg)[1] == '.ass':
             LoadF = open(self.Pathreg, "r" , encoding='utf-8')
             lines = LoadF.readlines()
-            ConvertData = ""
-            for line in lines:
-                former = line.split(':')[0]
-                if former == "Style" :
-                    style = line.split(':')[1].split(',')[0]
-                    ConvertData += line.replace(style, convert(style ,'zh-tw')) 
-                elif former == "Dialogue" :
-                    ConvertData += convert(line,'zh-tw')
-                else :
-                    ConvertData += line
+            ConvertData = ConvertAss(lines)
             if self.Coverreg :
-                self.Output_Cover(ConvertData)
+                Output_Cover(ConvertData, self.Pathreg)
             else :
-                self.Output_NoCover(ConvertData)
-
-    def Output_Cover(self, ConvertData):
-        with open(self.Pathreg, "w", encoding='utf-8') as WriteF:
-            WriteF.write(ConvertData)
-
-    def Output_NoCover(self, ConvertData):
-        FileName = os.path.basename(self.Pathreg)
-        with open(self.Folderreg + '/' + FileName, "w", encoding='utf-8') as WriteF:
-            WriteF.write(ConvertData)
+                Output_NoCover(ConvertData, self.Pathreg, self.Folderreg)
