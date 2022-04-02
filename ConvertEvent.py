@@ -1,5 +1,6 @@
 
 import os
+from tkinter.messagebox import RETRY
 from zhconv import convert
 def Convert(InputData):
     ConvertData = convert(InputData,'zh-tw')
@@ -19,10 +20,18 @@ def ConvertAss(InputList):
     return ConvertData
 
 def Output_Cover(ConvertData, FilePath) :
-    with open(FilePath, "w", encoding='utf-8') as WriteF:
-        WriteF.write(ConvertData)
+    try:
+        with open(FilePath, "w", encoding='utf-8') as WriteF:
+            WriteF.write(ConvertData)
+        return True
+    except:
+        return False
 
 def Output_NoCover(ConvertData, path, OutputPath):
-    FileName = os.path.basename(path)
-    with open(OutputPath + '/' + FileName, "w", encoding='utf-8') as WriteF:
-        WriteF.write(ConvertData)
+    try:
+        FileName = os.path.basename(path)
+        with open(OutputPath + '/' + FileName, "w", encoding='utf-8') as WriteF:
+            WriteF.write(ConvertData)
+        return True
+    except:
+        return False

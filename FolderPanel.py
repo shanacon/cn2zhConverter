@@ -109,6 +109,19 @@ class FolderPanel:
                 LoadF = open(file, "r" , encoding='utf-8')
                 ConvertData = Convert(LoadF.read())
             if self.Coverreg :
-                Output_Cover(ConvertData, file)
+                status = Output_Cover(ConvertData, file)
             else :
-                Output_NoCover(ConvertData, file, self.Outputreg)
+                status = Output_NoCover(ConvertData, file, self.Outputreg)
+            if not status:
+                break
+        if status:
+            self.Initial()
+            self.FolderText.config(text = "轉換完成")
+        else :
+            self.FolderText.config(text = "轉換錯誤")
+    
+    def Initial(self):
+        self.FolderText.config(text = "")
+        self.OutputFText.config(text = "")
+        self.Pathreg = ""
+        self.Outputreg = ""

@@ -79,6 +79,17 @@ class FilePanel:
             lines = LoadF.readlines()
             ConvertData = ConvertAss(lines)
         if self.Coverreg :
-            Output_Cover(ConvertData, self.Pathreg)
+            status = Output_Cover(ConvertData, self.Pathreg)
         else :
-            Output_NoCover(ConvertData, self.Pathreg, self.Outputreg)
+            status = Output_NoCover(ConvertData, self.Pathreg, self.Outputreg)
+        if status:
+            self.Initial()
+            self.FileText.config(text = "轉換完成")
+        else :
+            self.FileText.config(text = "轉換錯誤")
+
+    def Initial(self):
+        self.FileText.config(text = "")
+        self.OutputFText.config(text = "")
+        self.Pathreg = ""
+        self.Outputreg = ""
