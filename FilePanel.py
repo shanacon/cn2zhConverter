@@ -12,6 +12,10 @@ class FilePanel:
         self.WillCover = tk.BooleanVar()
         self.WillCover_Btn = tk.Checkbutton(window, text='直接覆蓋原檔案', var = self.WillCover, font = EntryFont)
         self.ExecuteBtn = tk.Button(window, text='開始轉換', bg = "light blue", font = BtnFont)
+        self.ToSim = tk.BooleanVar()
+        self.ToSim_Btn = tk.Checkbutton(window, text='轉換成簡體字', var = self.ToSim, font = EntryFont)
+        self.ToTrd = tk.BooleanVar()
+        self.ToTrd_Btn = tk.Checkbutton(window, text='轉換成繁體字', var = self.ToTrd, font = EntryFont)
         #
         self.FileText = tk.Label(window, text ="", font = EntryFont)
         self.OutputFText = tk.Label(window, text ="", font = EntryFont)
@@ -19,11 +23,14 @@ class FilePanel:
         self.Pathreg = ""
         self.Outputreg = ""
         self.Coverreg = False
+        self.STreg = ""
         ##
         self.WillCover_Btn.config(command = lambda:self.CoverEvent())
         self.FileBtn.config(command = lambda:self.ChooseFile())
         self.ExecuteBtn.config(command = lambda:self.ConvertAction())
         self.OutputPlace.config(command = lambda:self.ChooseOutput())
+        self.ToTrd_Btn.config(command = lambda:self.ChooseTrd())
+        self.ToSim_Btn.config(command = lambda:self.ChooseSim())
 
     def ShowUI(self):
         self.OutputText.place(x = 400, y = 150)
@@ -31,6 +38,8 @@ class FilePanel:
         self.WillCover_Btn.place(x = 400, y = 200)
         self.ExecuteBtn.place(x = 400, y = 325)
         self.FileText.place(x = 600, y = 62)
+        self.ToSim_Btn.place(x = 220, y = 340)
+        self.ToTrd_Btn.place(x = 220, y = 290)
         self.CoverEvent()
     
     def HideUI(self):
@@ -41,6 +50,8 @@ class FilePanel:
         self.ExecuteBtn.place_forget()
         self.FileText.place_forget()
         self.OutputFText.place_forget()
+        self.ToSim_Btn.place_forget()
+        self.ToTrd_Btn.place_forget()
 
     def CoverEvent(self):
         if self.WillCover.get() :
@@ -73,11 +84,11 @@ class FilePanel:
             return
         if os.path.splitext(self.Pathreg)[1] == '.txt' or  os.path.splitext(self.Pathreg)[1] == '.lrc' or  os.path.splitext(self.Pathreg)[1] == '.srt' :
             LoadF = open(self.Pathreg, "r" , encoding='utf-8')
-            ConvertData = Convert(LoadF.read())
+            ConvertData = Convert(LoadF.read(), self.STreg)
         if os.path.splitext(self.Pathreg)[1] == '.ass':
             LoadF = open(self.Pathreg, "r" , encoding='utf-8')
             lines = LoadF.readlines()
-            ConvertData = ConvertAss(lines)
+            ConvertData = ConvertAss(lines, self.STreg)
         if self.Coverreg :
             status = Output_Cover(ConvertData, self.Pathreg)
         else :
@@ -93,3 +104,14 @@ class FilePanel:
         self.OutputFText.config(text = "")
         self.Pathreg = ""
         self.Outputreg = ""
+
+    def ChooseSim(self):
+        if self.ToSim.get() :
+            self.ToTrd.set(False)
+            self.STreg = "zh-cn"
+    
+    def ChooseTrd(self):
+        if self.ToTrd.get() :
+            self.ToSim.set(False)
+            self.STreg = "zh-tw"
+

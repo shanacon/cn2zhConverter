@@ -22,6 +22,11 @@ class FolderPanel:
         self.ActiveSrt_Btn = tk.Checkbutton(window, text='轉換.srt檔案', var = self.ActiveSrt, font = EntryFont)
         self.ExecuteBtn = tk.Button(window, text='開始轉換', bg = "light blue", font = BtnFont)
         ##
+        self.ToSim = tk.BooleanVar()
+        self.ToSim_Btn = tk.Checkbutton(window, text='轉換成簡體字', var = self.ToSim, font = EntryFont)
+        self.ToTrd = tk.BooleanVar()
+        self.ToTrd_Btn = tk.Checkbutton(window, text='轉換成繁體字', var = self.ToTrd, font = EntryFont)
+        ##
         self.FolderText = tk.Label(window, text ="", font = EntryFont)
         self.OutputFText = tk.Label(window, text ="", font = EntryFont)
         ##
@@ -29,11 +34,14 @@ class FolderPanel:
         self.Pathreg = ""
         self.Outputreg = ""
         self.Coverreg = False
+        self.STreg = ""
         ##
         self.WillCover_Btn.config(command = lambda:self.CoverEvent())
         self.FolderBtn.config(command = lambda:self.ChooseFolder())
         self.ExecuteBtn.config(command = lambda:self.ConvertAction())
         self.OutputPlace.config(command = lambda:self.ChooseOutput())
+        self.ToTrd_Btn.config(command = lambda:self.ChooseTrd())
+        self.ToSim_Btn.config(command = lambda:self.ChooseSim())
 
     def ShowUI(self):
         self.OutputText.place(x = 400, y = 150)
@@ -46,6 +54,8 @@ class FolderPanel:
         self.ActiveSrt_Btn.place(x = 220, y = 220)
         self.ExecuteBtn.place(x = 400, y = 325)
         self.FolderText.place(x = 600, y = 62)
+        self.ToSim_Btn.place(x = 220, y = 340)
+        self.ToTrd_Btn.place(x = 220, y = 290)
         self.CoverEvent()
 
     def HideUI(self):
@@ -60,6 +70,8 @@ class FolderPanel:
         self.ActiveSrt_Btn.place_forget()
         self.FolderText.place_forget()
         self.OutputFText.place_forget()
+        self.ToSim_Btn.place_forget()
+        self.ToTrd_Btn.place_forget()
         
     def CoverEvent(self):
         if self.WillCover.get() :
@@ -104,10 +116,10 @@ class FolderPanel:
             if os.path.splitext(file)[1] == '.ass' :
                 LoadF = open(file, "r" , encoding='utf-8')
                 lines = LoadF.readlines()
-                ConvertData = ConvertAss(lines)
+                ConvertData = ConvertAss(lines, self.STreg)
             else :
                 LoadF = open(file, "r" , encoding='utf-8')
-                ConvertData = Convert(LoadF.read())
+                ConvertData = Convert(LoadF.read(), self.STreg)
             if self.Coverreg :
                 status = Output_Cover(ConvertData, file)
             else :
@@ -125,3 +137,13 @@ class FolderPanel:
         self.OutputFText.config(text = "")
         self.Pathreg = ""
         self.Outputreg = ""
+
+    def ChooseSim(self):
+        if self.ToSim.get() :
+            self.ToTrd.set(False)
+            self.STreg = "zh-cn"
+    
+    def ChooseTrd(self):
+        if self.ToTrd.get() :
+            self.ToSim.set(False)
+            self.STreg = "zh-tw"

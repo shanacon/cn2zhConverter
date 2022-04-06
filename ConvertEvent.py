@@ -2,19 +2,19 @@
 import os
 from tkinter.messagebox import RETRY
 from zhconv import convert
-def Convert(InputData):
-    ConvertData = convert(InputData,'zh-tw')
+def Convert(InputData, ST):
+    ConvertData = convert(InputData,ST)
     return ConvertData
 
-def ConvertAss(InputList):
+def ConvertAss(InputList, ST):
     ConvertData = ""
     for line in InputList:
         former = line.split(':')[0]
         if former == "Style" :
             style = line.split(':')[1].split(',')[0]
-            ConvertData += line.replace(style, convert(style ,'zh-tw')) 
+            ConvertData += line.replace(style, convert(style ,ST)) 
         elif former == "Dialogue" :
-            ConvertData += convert(line,'zh-tw')
+            ConvertData += convert(line,ST)
         else :
             ConvertData += line
     return ConvertData
