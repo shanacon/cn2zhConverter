@@ -11,6 +11,6 @@ EntryFont = font.Font(size=14)
 ###     main Panel
 mainpanel = MainPanel(window, BtnFont, EntryFont)
 
-window.title('cn2zh')
+window.title('zhConverter')
 window.geometry("1000x400+500+300")
 window.mainloop()
