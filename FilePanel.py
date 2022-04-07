@@ -19,6 +19,7 @@ class FilePanel:
         #
         self.FileText = tk.Label(window, text ="", font = EntryFont)
         self.OutputFText = tk.Label(window, text ="", font = EntryFont)
+        self.StatusText = tk.Label(window, text ="", font = EntryFont)
         #
         self.Pathreg = ""
         self.Outputreg = ""
@@ -40,6 +41,8 @@ class FilePanel:
         self.FileText.place(x = 600, y = 62)
         self.ToSim_Btn.place(x = 220, y = 340)
         self.ToTrd_Btn.place(x = 220, y = 290)
+        self.StatusText.place(x = 550, y = 325)
+        self.ExecuteBtn.config(command = lambda:self.ConvertAction())
         self.CoverEvent()
     
     def HideUI(self):
@@ -52,6 +55,7 @@ class FilePanel:
         self.OutputFText.place_forget()
         self.ToSim_Btn.place_forget()
         self.ToTrd_Btn.place_forget()
+        self.StatusText.place_forget()
 
     def CoverEvent(self):
         if self.WillCover.get() :
@@ -77,10 +81,13 @@ class FilePanel:
 
     def ConvertAction(self):
         if self.Pathreg == "" :
-            self.FileText.config(text = "請選擇欲轉換的檔案！")
+            self.StatusText.config(text = "請選擇欲轉換的檔案！")
             return
         if not self.Coverreg and self.Outputreg == "":
-            self.OutputFText.config(text = "請選擇輸出資料夾！")
+            self.StatusText.config(text = "請選擇輸出資料夾！")
+            return
+        if self.STreg == "":
+            self.StatusText.config(text = "請選擇輸出語言！")
             return
         if os.path.splitext(self.Pathreg)[1] == '.txt' or  os.path.splitext(self.Pathreg)[1] == '.lrc' or  os.path.splitext(self.Pathreg)[1] == '.srt' :
             LoadF = open(self.Pathreg, "r" , encoding='utf-8')
@@ -95,9 +102,9 @@ class FilePanel:
             status = Output_NoCover(ConvertData, self.Pathreg, self.Outputreg)
         if status:
             self.Initial()
-            self.FileText.config(text = "轉換完成")
+            self.StatusText.config(text = "轉換完成")
         else :
-            self.FileText.config(text = "轉換錯誤")
+            self.StatusText.config(text = "轉換錯誤")
 
     def Initial(self):
         self.FileText.config(text = "")

@@ -29,6 +29,7 @@ class FolderPanel:
         ##
         self.FolderText = tk.Label(window, text ="", font = EntryFont)
         self.OutputFText = tk.Label(window, text ="", font = EntryFont)
+        self.StatusText = tk.Label(window, text ="", font = EntryFont)
         ##
         self.filelist = []
         self.Pathreg = ""
@@ -56,6 +57,7 @@ class FolderPanel:
         self.FolderText.place(x = 600, y = 62)
         self.ToSim_Btn.place(x = 220, y = 340)
         self.ToTrd_Btn.place(x = 220, y = 290)
+        self.StatusText.place(x = 550, y = 325)
         self.CoverEvent()
 
     def HideUI(self):
@@ -72,6 +74,8 @@ class FolderPanel:
         self.OutputFText.place_forget()
         self.ToSim_Btn.place_forget()
         self.ToTrd_Btn.place_forget()
+        self.StatusText.place_forget()
+        self.ExecuteBtn.place_forget()
         
     def CoverEvent(self):
         if self.WillCover.get() :
@@ -97,12 +101,15 @@ class FolderPanel:
     def ConvertAction(self):
         self.filelist = []
         if self.Pathreg == "" :
-            self.FolderText.config(text = "請選擇欲轉換的資料夾！")
+            self.StatusText.config(text = "請選擇欲轉換的資料夾！")
             return
         if not self.Coverreg and self.Outputreg == "":
-            self.OutputFText.config(text = "請選擇輸出資料夾！")
+            self.StatusText.config(text = "請選擇輸出資料夾！")
             return
-        for root, dirs, files in os.walk(self.Pathreg):
+        if self.STreg == "":
+            self.StatusText.config(text = "請選擇輸出語言！")
+            return
+        for root, files in os.walk(self.Pathreg):
             for file in files:
                 if self.ActiveAss.get() and os.path.splitext(file)[1] == '.ass' :
                     self.filelist.append(os.path.join(root, file))
@@ -128,9 +135,9 @@ class FolderPanel:
                 break
         if status:
             self.Initial()
-            self.FolderText.config(text = "轉換完成")
+            self.StatusText.config(text = "轉換完成")
         else :
-            self.FolderText.config(text = "轉換錯誤")
+            self.StatusText.config(text = "轉換錯誤")
     
     def Initial(self):
         self.FolderText.config(text = "")
