@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from zhconv import convert
 from ConvertEvent import *
+from ReadEvent import *
 import os
 
 class FolderPanel:
@@ -92,6 +93,7 @@ class FolderPanel:
         if file_path != "":
             self.FolderText.config(text = file_path)
             self.Pathreg = file_path
+            self.StatusText.config(text = "")
 
     def ChooseOutput(self):
         self.Outputreg = filedialog.askdirectory()
@@ -109,7 +111,7 @@ class FolderPanel:
         if self.STreg == "":
             self.StatusText.config(text = "請選擇輸出語言！")
             return
-        for root, files in os.walk(self.Pathreg):
+        for root, dirs, files in os.walk(self.Pathreg):
             for file in files:
                 if self.ActiveAss.get() and os.path.splitext(file)[1] == '.ass' :
                     self.filelist.append(os.path.join(root, file))
@@ -121,12 +123,11 @@ class FolderPanel:
                     self.filelist.append(os.path.join(root, file))
         for file in self.filelist :
             if os.path.splitext(file)[1] == '.ass' :
-                LoadF = open(file, "r" , encoding='utf-8')
-                lines = LoadF.readlines()
+                lines = ReadData(file)
                 ConvertData = ConvertAss(lines, self.STreg)
             else :
-                LoadF = open(file, "r" , encoding='utf-8')
-                ConvertData = Convert(LoadF.read(), self.STreg)
+                lines = ReadData(file)
+                ConvertData = Convert(lines, self.STreg)
             if self.Coverreg :
                 status = Output_Cover(ConvertData, file)
             else :

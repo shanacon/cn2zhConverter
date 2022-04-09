@@ -3,7 +3,9 @@ import os
 from tkinter.messagebox import RETRY
 from zhconv import convert
 def Convert(InputData, ST):
-    ConvertData = convert(InputData,ST)
+    ConvertData = ""
+    for line in InputData:
+        ConvertData += convert(line,ST)
     return ConvertData
 
 def ConvertAss(InputList, ST):

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from zhconv import convert
 from ConvertEvent import *
+from ReadEvent import *
 import os
 
 class FilePanel:
@@ -73,6 +74,8 @@ class FilePanel:
             if os.path.splitext(file_path)[1] == '.txt' or  os.path.splitext(file_path)[1] == '.lrc' or  os.path.splitext(file_path)[1] == '.ass' or os.path.splitext(file_path)[1] == '.srt'  :
                 self.FileText.config(text = os.path.basename(file_path))
                 self.Pathreg = file_path
+                self.StatusText.config(text = "")
+                
     
     def ChooseOutput(self):
         self.Outputreg = filedialog.askdirectory()
@@ -90,11 +93,10 @@ class FilePanel:
             self.StatusText.config(text = "請選擇輸出語言！")
             return
         if os.path.splitext(self.Pathreg)[1] == '.txt' or  os.path.splitext(self.Pathreg)[1] == '.lrc' or  os.path.splitext(self.Pathreg)[1] == '.srt' :
-            LoadF = open(self.Pathreg, "r" , encoding='utf-8')
-            ConvertData = Convert(LoadF.read(), self.STreg)
+            lines = ReadData(self.Pathreg)
+            ConvertData = Convert(lines, self.STreg)
         if os.path.splitext(self.Pathreg)[1] == '.ass':
-            LoadF = open(self.Pathreg, "r" , encoding='utf-8')
-            lines = LoadF.readlines()
+            lines = ReadData(self.Pathreg)
             ConvertData = ConvertAss(lines, self.STreg)
         if self.Coverreg :
             status = Output_Cover(ConvertData, self.Pathreg)
@@ -121,4 +123,3 @@ class FilePanel:
         if self.ToTrd.get() :
             self.ToSim.set(False)
             self.STreg = "zh-tw"
-
