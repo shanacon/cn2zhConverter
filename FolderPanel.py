@@ -121,6 +121,9 @@ class FolderPanel:
                     self.filelist.append(os.path.join(root, file))
                 if self.ActiveSrt.get() and os.path.splitext(file)[1] == '.srt' :
                     self.filelist.append(os.path.join(root, file))
+        if len(self.filelist) == 0 :
+            self.StatusText.config(text = "沒有對應檔案")
+            return
         for file in self.filelist :
             if os.path.splitext(file)[1] == '.ass' :
                 lines = ReadData(file)
